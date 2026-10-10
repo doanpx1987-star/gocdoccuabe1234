@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Góc Đọc Thông Minh - Lớp 2 (Bộ Kết Nối Tri Thức)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Quicksand thân thiện trẻ thơ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      font-family: 'Quicksand', sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    /* Đảm bảo tương thích tai thỏ và thanh vuốt đáy trên iPhone / Android */
+    body {
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      min-height: 100vh;
+      background-color: #fefce8; /* tone vàng kem ấm áp */
+    }
+
+    /* Hiệu ứng nảy vui nhộn cho trẻ nhỏ */
+    @keyframes softBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-soft-bounce {
+      animation: softBounce 2.4s infinite ease-in-out;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .pop-in {
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    /* Nút bấm xúc giác lớn (Tactile Buttons) với rãnh nhấn thân thiện tay bé */
+    .btn-tactile {
+      transition: all 0.12s ease;
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.16);
+      touch-action: manipulation;
+    }
+    .btn-tactile:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.16);
+    }
+
+    /* Tương tác chạm từng từ trong bài */
+    .word-token {
+      display: inline-block;
+      padding: 3px 6px;
+      margin: 2px 1px;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .word-token:active, .word-token:hover {
+      background-color: #fde047;
+    }
+    .word-token.word-correct {
+      background-color: #dcfce7 !important;
+      color: #15803d !important;
+      font-weight: 700;
+    }
+    .word-token.word-wrong {
+      background-color: #fee2e2 !important;
+      color: #b91c1c !important;
+      border-bottom: 3px dashed #ef4444;
+      font-weight: 800;
+      animation: softBounce 1.8s infinite ease-in-out;
+    }
+
+    /* Hiệu ứng nhịp đập khi micro đang ghi âm */
+    @keyframes micPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+      50% { transform: scale(1.03); box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+    }
+    .mic-recording-pulse {
+      animation: micPulse 1.2s infinite ease-in-out;
+    }
+
+    /* Tránh ngắt dòng từ vô lý */
+    .word-break-keep {
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+  </style>
+</head>
+<body class="text-slate-800 flex flex-col justify-between selection:bg-yellow-200">
+
+  <header class="bg-white/95 backdrop-blur border-b-4 border-amber-200 shadow-sm py-3 px-3 sm:px-5 sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <button onclick="goToHome()" class="flex items-center gap-2.5 text-left group cursor-pointer focus:outline-none">
+        <span class="text-3xl sm:text-4xl animate-soft-bounce">📚</span>
+        <div>
+          <h1 class="text-xl sm:text-3xl font-extrabold text-amber-600 tracking-wide group-hover:text-amber-700 leading-tight">
+            Góc Đọc Thông Minh
+          </h1>
+          <p class="text-xs sm:text-base font-bold text-slate-500">Tiếng Việt 2 • Bộ Kết Nối Tri Thức 🌸</p>
+        </div>
+      </button>
+
+      <button id="headerHomeBtn" onclick="goToHome()" class="hidden bg-amber-100 active:bg-amber-200 text-amber-900 text-base sm:text-lg font-black px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-2xl border-2 border-amber-300 btn-tactile">
+        🏠 Về đầu
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-4xl w-full mx-auto p-3 sm:p-5 flex-grow flex flex-col justify-center">
+
+    <!-- ======================================================= -->
+    <!-- MÀN HÌNH 1: CHỌN MỨC ĐỌC                               -->
+    <!-- ======================================================= -->
+    <section id="screenLevels" class="flex flex-col items-center justify-center gap-4 sm:gap-6 py-2 sm:py-4 pop-in">
+      <div class="text-center px-2">
+        <span class="inline-block bg-yellow-200 text-yellow-950 text-base sm:text-xl font-extrabold px-4 sm:px-6 py-1.5 sm:py-2 rounded-full mb-2 shadow-sm">
+          Chào mừng em đến góc đọc sách! ✨
+        </span>
+        <h2 class="text-2xl sm:text-4xl font-black text-slate-800 leading-snug">
+          Hôm nay em muốn luyện mức nào?
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 w-full max-w-xl gap-3.5 sm:gap-5 px-1">
+        <!-- Mức 1 - Xanh lá -->
+        <button onclick="selectLevel(1)" 
+          class="btn-tactile bg-emerald-500 active:bg-emerald-600 text-white rounded-3xl p-4 sm:p-6 border-b-6 sm:border-b-8 border-emerald-700 flex items-center justify-between text-left">
+          <div class="flex items-center gap-3 sm:gap-5">
+            <span class="text-4xl sm:text-6xl">🐢</span>
+            <div>
+              <div class="text-xl sm:text-3xl font-black">Mức 1 – Đọc chậm</div>
+              <div class="text-sm sm:text-lg text-emerald-100 font-bold">Từng từ rõ ràng, thong thả (4 bài)</div>
+            </div>
+          </div>
+          <span class="text-2xl sm:text-3xl">👉</span>
+        </button>
+
+        <!-- Mức 2 - Vàng -->
+        <button onclick="selectLevel(2)" 
+          class="btn-tactile bg-amber-400 active:bg-amber-500 text-slate-900 rounded-3xl p-4 sm:p-6 border-b-6 sm:border-b-8 border-amber-600 flex items-center justify-between text-left">
+          <div class="flex items-center gap-3 sm:gap-5">
+            <span class="text-4xl sm:text-6xl">🐰</span>
+            <div>
+              <div class="text-xl sm:text-3xl font-black">Mức 2 – Đọc khá</div>
+              <div class="text-sm sm:text-lg text-amber-950 font-bold">Đọc trôi chảy, đúng nhịp điệu (4 bài)</div>
+            </div>
+          </div>
+          <span class="text-2xl sm:text-3xl">👉</span>
+        </button>
+
+        <!-- Mức 3 - Cam -->
+        <button onclick="selectLevel(3)" 
+          class="btn-tactile bg-orange-500 active:bg-orange-600 text-white rounded-3xl p-4 sm:p-6 border-b-6 sm:border-b-8 border-orange-700 flex items-center justify-between text-left">
+          <div class="flex items-center gap-3 sm:gap-5">
+            <span class="text-4xl sm:text-6xl">🦁</span>
+            <div>
+              <div class="text-xl sm:text-3xl font-black">Mức 3 – Đọc tốt</div>
+              <div class="text-sm sm:text-lg text-orange-100 font-bold">Đọc nhanh, diễn cảm tuyệt vời (4 bài)</div>
+            </div>
+          </div>
+          <span class="text-2xl sm:text-3xl">👉</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="screenStoryPicker" class="hidden flex-col items-center justify-center gap-4 sm:gap-6 py-2 sm:py-4 pop-in">
+      <div class="text-center px-2">
+        <div class="flex items-center justify-center gap-2 mb-2">
+          <button onclick="goToHome()" class="text-sm sm:text-base font-bold bg-white text-slate-700 px-3 py-1 sm:px-4 sm:py-1.5 rounded-2xl border-2 border-slate-300 active:bg-slate-100">
+            ⬅ Chọn mức khác
+          </button>
+          <span id="pickerLevelBadge" class="text-base sm:text-xl font-black px-4 py-1 rounded-full text-white bg-emerald-500">
+            Mức 1
+          </span>
+        </div>
+        <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-800">
+          Em hãy chọn bài đọc yêu thích nhé! 📖
+        </h2>
+      </div>
+
+      <div id="storyCardsList" class="grid grid-cols-1 md:grid-cols-2 w-full max-w-3xl gap-3 sm:gap-4 px-1">
+      </div>
+    </section>
+
+    <section id="screenReading" class="hidden flex-col gap-4 sm:gap-6 pop-in pb-16 sm:pb-6">
+      
+      <!-- Hộp công cụ phía trên bài đọc -->
+      <div class="bg-white rounded-3xl p-3 sm:p-5 shadow-sm border-2 border-yellow-200 flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
+        
+        <div class="flex items-center gap-2">
+          <span id="levelBadge" class="text-sm sm:text-xl font-black px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-white bg-emerald-500">
+            Mức 1
+          </span>
+          <button onclick="openStoryPicker(currentLevel)" class="text-xs sm:text-base font-black bg-amber-100 active:bg-amber-200 text-amber-900 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-2xl border border-amber-300">
+            📑 Đổi bài
+          </button>
+        </div>
+
+        <!-- Chỉnh cỡ chữ điện thoại và máy tính bảng -->
+        <div class="flex items-center gap-1.5 bg-slate-100 p-1 sm:p-1.5 rounded-2xl border border-slate-200">
+          <span class="text-xs sm:text-base font-bold text-slate-600 px-1 sm:px-2">Cỡ chữ:</span>
+          <button onclick="changeFontSize(-3)" class="w-9 h-9 sm:w-11 sm:h-11 bg-white rounded-xl shadow-sm font-black text-lg sm:text-2xl flex items-center justify-center active:bg-amber-100 text-slate-700" title="Chữ nhỏ hơn">A-</button>
+          <button onclick="changeFontSize(3)" class="w-9 h-9 sm:w-11 sm:h-11 bg-white rounded-xl shadow-sm font-black text-lg sm:text-2xl flex items-center justify-center active:bg-amber-100 text-slate-700" title="Chữ to hơn">A+</button>
+        </div>
+
+        <!-- Nút Nghe cô đọc và chọn tốc độ -->
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+          <div class="flex items-center gap-1 bg-amber-50 p-1 rounded-2xl border border-amber-200">
+            <span class="text-xs sm:text-sm font-bold text-amber-800 px-1 sm:px-2">Tốc độ:</span>
+            <button id="speedSlowBtn" onclick="setTtsSpeed(0.85)" class="px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-black rounded-xl bg-amber-300 text-amber-950">Chậm</button>
+            <button id="speedNormalBtn" onclick="setTtsSpeed(1.0)" class="px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-bold rounded-xl bg-transparent text-slate-600">Vừa</button>
+          </div>
+
+          <button id="readAloudBtn" onclick="toggleReadAloud()" class="btn-tactile bg-sky-500 active:bg-sky-600 text-white text-base sm:text-xl font-bold px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl flex items-center gap-1.5">
+            <span id="readIcon">👩‍🏫</span> <span id="readText">Nghe cô đọc</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Banner trạng thái âm thanh cô giáo đọc -->
+      <div id="ttsStatusBanner" class="hidden bg-sky-50 border-2 border-sky-300 rounded-2xl p-2.5 sm:p-3 flex items-center justify-between gap-2 shadow-sm">
+        <div class="flex items-center gap-2 sm:gap-3">
+          <span class="text-2xl sm:text-3xl animate-bounce">🎧</span>
+          <div>
+            <div id="ttsStatusTitle" class="text-sm sm:text-lg font-black text-sky-950">Cô giáo đang đọc bài...</div>
+            <div id="ttsStatusSubtitle" class="text-xs sm:text-sm font-semibold text-sky-700 hidden sm:block">Giọng đọc miền Bắc ngọt ngào, rõ nhịp điệu cho bé lớp 2</div>
+          </div>
+        </div>
+        <button onclick="stopReadAloud()" class="text-xs sm:text-sm font-black bg-rose-500 active:bg-rose-600 text-white px-3 py-1.5 rounded-xl">Dừng</button>
+      </div>
+
+      <!-- Khung bài đọc lớn -->
+      <article class="bg-white rounded-3xl p-4 sm:p-8 shadow-sm border-3 sm:border-4 border-amber-200">
+        <h3 id="storyTitle" class="text-2xl sm:text-4xl font-black text-amber-700 text-center mb-4 sm:mb-6 pb-3 border-b-2 border-dashed border-amber-200 leading-tight">
+          Tiêu đề truyện
+        </h3>
+        
+        <!-- Đoạn văn đọc (font size điều chỉnh động qua JS) -->
+        <div id="storyContent" class="text-slate-800 text-justify tracking-normal select-text word-break-keep whitespace-pre-line leading-relaxed font-semibold">
+          Nội dung truyện sẽ hiển thị ở đây...
+        </div>
+        
+        <p class="text-center text-xs sm:text-sm font-bold text-amber-700 mt-4 italic bg-amber-50 py-1.5 px-3 rounded-xl border border-amber-200 inline-block w-full">
+          💡 Mẹo: Em có thể chạm/bấm trực tiếp vào từng từ ở bài đọc trên để nghe cô hướng dẫn phát âm nhé!
+        </p>
+      </article>
+
+      <div class="bg-gradient-to-br from-emerald-50 via-teal-50 to-amber-50 rounded-3xl p-4 sm:p-6 border-2 sm:border-3 border-emerald-300 shadow-sm flex flex-col gap-4 sm:gap-5">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5 sm:gap-3">
+            <span class="text-3xl sm:text-4xl">🎙️</span>
+            <div>
+              <h4 class="text-lg sm:text-2xl font-black text-emerald-950">Bé tự đọc & Nghe lại</h4>
+              <p class="text-xs sm:text-base text-emerald-800 font-bold">Máy sẽ lắng nghe và chỉ ra từ bé cần cô chỉ dạy thêm nhé!</p>
+            </div>
+          </div>
+          <span id="micStatusBadge" class="hidden text-xs sm:text-sm font-black bg-white text-rose-600 px-2.5 py-1 rounded-full border border-rose-300 shadow-sm animate-pulse">
+            🔴 Đang nghe...
+          </span>
+        </div>
+
+        <!-- Hàng nút ghi âm & nghe lại phản hồi tốt trên điện thoại -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
+          <button id="recordBtn" onclick="toggleChildRecording()" class="btn-tactile bg-emerald-600 active:bg-emerald-700 text-white text-base sm:text-xl font-black px-4 py-3 sm:px-6 sm:py-3.5 rounded-2xl flex items-center justify-center gap-2.5 cursor-pointer">
+            <span id="recordBtnIcon" class="text-2xl">🎙️</span> <span id="recordBtnText">Bé bấm để bắt đầu đọc</span>
+          </button>
+
+          <button id="playbackChildBtn" onclick="toggleChildPlayback()" disabled class="btn-tactile bg-slate-200 text-slate-400 text-base sm:text-xl font-black px-4 py-3 sm:px-6 sm:py-3.5 rounded-2xl flex items-center justify-center gap-2.5 cursor-not-allowed">
+            <span id="playbackIcon" class="text-2xl">🎧</span> <span id="playbackText">Nghe lại giọng bé đọc</span>
+          </button>
+
+          <audio id="childAudioPlayer" class="hidden" playsinline></audio>
+        </div>
+
+        <!-- Băng thông báo nhận xét đọc -->
+        <div id="recordingFeedback" class="hidden p-3.5 sm:p-4 rounded-2xl border-2 transition-all">
+          <div class="flex items-center gap-2.5">
+            <span id="recordingFeedbackIcon" class="text-2xl sm:text-3xl">✨</span>
+            <div id="recordingFeedbackText" class="text-base sm:text-xl font-extrabold"></div>
+          </div>
+        </div>
+
+        <!-- Khung danh sách từ đọc sai để cô hướng dẫn -->
+        <div id="wrongWordsContainer" class="hidden bg-white rounded-2xl p-3.5 sm:p-5 border-2 border-rose-200 shadow-sm flex flex-col gap-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div>
+              <div class="text-base sm:text-xl font-black text-rose-800">Từ bé cần chú ý đọc lại:</div>
+              <div class="text-xs sm:text-sm text-slate-600 font-bold">Chạm vào từng từ để nghe cô giáo phát âm chuẩn nhé:</div>
+            </div>
+
+            <button id="guideAllWrongBtn" onclick="guideAllWrongWords()" class="btn-tactile bg-rose-500 active:bg-rose-600 text-white text-sm sm:text-base font-black px-3.5 py-2 rounded-2xl flex items-center justify-center gap-2">
+              <span>👩‍🏫</span> <span>Cô đọc lại các từ này</span>
+            </button>
+          </div>
+
+          <div id="wrongWordsList" class="flex flex-wrap gap-2 pt-1">
+            <!-- Render động bằng JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-4 sm:p-6 border-2 sm:border-3 border-indigo-200 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2.5 sm:gap-3">
+            <span class="text-3xl sm:text-4xl">⏱️</span>
+            <div>
+              <h4 class="text-lg sm:text-2xl font-black text-indigo-950">Thử thách 60 giây</h4>
+              <p class="text-xs sm:text-base text-indigo-700 font-bold">Đo bé đọc được bao nhiêu từ trong 1 phút</p>
+            </div>
+          </div>
+          <div id="timerDisplay" class="text-3xl sm:text-5xl font-black text-indigo-600 bg-white px-3 sm:px-5 py-1 sm:py-2 rounded-2xl shadow-inner border border-indigo-200">
+            60s
+          </div>
+        </div>
+
+        <div class="w-full bg-indigo-200 h-3 sm:h-4 rounded-full overflow-hidden mb-3">
+          <div id="timerProgress" class="bg-indigo-600 h-full w-full transition-all duration-1000 ease-linear"></div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5">
+          <button id="startTimerBtn" onclick="toggleTimer()" class="btn-tactile bg-indigo-600 active:bg-indigo-700 text-white text-base sm:text-xl font-black px-4 py-2 sm:px-6 sm:py-2.5 rounded-2xl flex items-center gap-2">
+            <span>▶️</span> Bắt đầu đọc
+          </button>
+          <button onclick="resetTimer()" class="bg-slate-200 active:bg-slate-300 text-slate-700 text-sm sm:text-base font-bold px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl">
+            🔄 Đặt lại
+          </button>
+          <span id="timerNotice" class="text-xs sm:text-base font-bold text-indigo-700 hidden"></span>
+        </div>
+
+        <!-- Ô nhập dành cho Giáo viên / Phụ huynh -->
+        <div id="scoreBox" class="mt-4 pt-3.5 border-t border-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <label for="correctWordsInput" class="text-sm sm:text-lg font-black text-indigo-950">
+              👩‍🏫 Số từ đọc đúng:
+            </label>
+            <input type="number" id="correctWordsInput" min="0" max="300" placeholder="0" 
+              class="w-20 sm:w-24 text-2xl sm:text-3xl font-black text-center text-indigo-800 bg-white border-2 border-indigo-300 rounded-2xl py-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              oninput="calculateWPM()">
+            <span class="text-sm sm:text-lg font-bold text-slate-600">từ</span>
+          </div>
+
+          <div class="bg-white rounded-2xl p-2.5 border-2 border-indigo-200 flex items-center gap-2 self-start sm:self-auto">
+            <span class="text-xl">⚡</span>
+            <div class="text-sm sm:text-base font-bold text-slate-700">
+              Tốc độ: <span id="wpmResult" class="text-2xl sm:text-3xl font-black text-emerald-600">0</span> <span class="text-xs font-bold text-slate-500">từ/phút</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nút chuyển sang câu hỏi trắc nghiệm -->
+      <div class="text-center pt-2">
+        <button onclick="goToQuiz()" class="btn-tactile bg-emerald-500 active:bg-emerald-600 text-white text-lg sm:text-2xl font-black px-6 py-3.5 sm:px-8 sm:py-4 rounded-3xl border-b-6 border-emerald-700 flex items-center justify-center gap-2 mx-auto w-full sm:w-auto">
+          <span>Đọc xong rồi! Làm câu đố vui thôi</span>
+          <span class="text-2xl sm:text-3xl animate-soft-bounce">✨</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="screenQuiz" class="hidden flex-col gap-4 sm:gap-6 pop-in">
+      <div class="bg-white rounded-3xl p-4 sm:p-6 shadow-sm border-3 border-amber-200 text-center">
+        <span class="text-3xl sm:text-4xl">🌟</span>
+        <h3 class="text-2xl sm:text-4xl font-black text-amber-700 mt-1">Câu hỏi vui hiểu bài</h3>
+        <p class="text-sm sm:text-lg font-bold text-slate-500 mt-0.5">Em hãy chọn một đáp án đúng nhất nhé!</p>
+      </div>
+
+      <div id="quizContainer" class="flex flex-col gap-4 sm:gap-5">
+        <!-- Render động từ JS -->
+      </div>
+
+      <div id="quizBottomNav" class="text-center mt-3 hidden">
+        <button onclick="goToLesson()" class="btn-tactile bg-amber-500 active:bg-amber-600 text-white text-lg sm:text-2xl font-black px-6 py-3.5 sm:px-8 sm:py-4 rounded-3xl border-b-6 border-amber-700 inline-flex items-center gap-2">
+          <span>Xem bài học bổ ích</span>
+          <span class="text-2xl sm:text-3xl">🎁</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="screenLesson" class="hidden flex-col items-center justify-center gap-4 sm:gap-6 py-4 pop-in text-center">
+      <div class="bg-white rounded-3xl p-5 sm:p-10 shadow-sm border-4 border-amber-300 max-w-2xl w-full flex flex-col items-center">
+        
+        <div class="text-6xl sm:text-8xl mb-3 animate-soft-bounce">🏆</div>
+        
+        <span class="bg-amber-100 text-amber-800 text-base sm:text-xl font-black px-4 sm:px-6 py-1 sm:py-1.5 rounded-full mb-3">
+          Bé thật là xuất sắc!
+        </span>
+
+        <h3 class="text-2xl sm:text-3xl font-black text-amber-700 mb-4">
+          Bài học cuộc sống dành cho em 💡
+        </h3>
+
+        <div class="bg-amber-50 rounded-2xl p-4 sm:p-6 border-2 border-dashed border-amber-300 w-full mb-6 text-left sm:text-center">
+          <p id="lessonText" class="text-base sm:text-2xl font-bold text-slate-800 leading-relaxed">
+            Nội dung bài học sẽ hiện ở đây...
+          </p>
+        </div>
+
+        <div class="flex justify-center gap-2 sm:gap-4 mb-6">
+          <div class="flex flex-col items-center bg-yellow-50 p-2 sm:p-3 rounded-2xl border border-yellow-200">
+            <span class="text-2xl sm:text-3xl">⭐</span>
+            <span class="text-xs sm:text-sm font-bold text-amber-800 mt-1">Chăm chỉ</span>
+          </div>
+          <div class="flex flex-col items-center bg-emerald-50 p-2 sm:p-3 rounded-2xl border border-emerald-200">
+            <span class="text-2xl sm:text-3xl">📖</span>
+            <span class="text-xs sm:text-sm font-bold text-emerald-800 mt-1">Đọc tốt</span>
+          </div>
+          <div class="flex flex-col items-center bg-sky-50 p-2 sm:p-3 rounded-2xl border border-sky-200">
+            <span class="text-2xl sm:text-3xl">💖</span>
+            <span class="text-xs sm:text-sm font-bold text-sky-800 mt-1">Bé ngoan</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 w-full">
+          <button onclick="nextStoryInLevel()" class="btn-tactile bg-sky-500 active:bg-sky-600 text-white text-lg sm:text-2xl font-black px-4 py-3 sm:px-6 sm:py-4 rounded-3xl border-b-6 border-sky-700 flex items-center justify-center gap-2 w-full">
+            <span>➡️ Đọc bài tiếp theo</span>
+          </button>
+          <button onclick="openStoryPicker(currentLevel)" class="btn-tactile bg-emerald-500 active:bg-emerald-600 text-white text-lg sm:text-2xl font-black px-4 py-3 sm:px-6 sm:py-4 rounded-3xl border-b-6 border-emerald-700 flex items-center justify-center gap-2 w-full">
+            <span>📚 Chọn bài trong mức</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-white border-t-2 border-yellow-200 py-3 text-center text-slate-500 text-xs sm:text-sm font-bold">
+    Góc Đọc Thông Minh • Tương thích mọi điện thoại & máy tính bảng 🎈
+  </footer>
+
+  <script>
+    const READING_DATA = {
+      // 🌿 MỨC 1 – ĐỌC CHẬM
+      level1: {
+        badgeText: "Mức 1 – Đọc chậm 🐢",
+        badgeBg: "bg-emerald-500",
+        stories: [
+          {
+            id: "sgk_b1",
+            title: "Tôi Là Học Sinh Lớp 2 🎒",
+            summary: "Niềm vui và sự háo hức của bạn nhỏ trong ngày đầu tiên bước vào năm học lớp 2.",
+            storyText: "Ngày khai trường đã đến. Sáng sớm, mẹ mới gọi một câu mà tôi đã vùng dậy, khác hẳn mọi ngày. Loáng một cái, tôi đã chuẩn bị xong mọi thứ. Bố ngạc nhiên nhìn tôi, còn mẹ cười tủm tỉm. Tôi rối rít: \"Con muốn đến lớp sớm nhất.\".\nTôi háo hức tưởng tượng ra cảnh mình đến đầu tiên, cất tiếng chào thật to những bạn đến sau. Nhưng vừa đến cổng trường, tôi đã thấy mấy bạn cùng lớp đang ríu rít nói cười ở trong sân. Thì ra, không chỉ mình tôi muốn đến sớm nhất. Tôi chào mẹ, chạy ào vào cùng các bạn.\nChúng tôi tranh nhau kể về chuyện ngày hè. Ngay cạnh chúng tôi, mấy em lớp 1 đang rụt rè níu chặt tay bố mẹ, thật giống tôi năm ngoái. Trước các em, tôi cảm thấy mình lớn bổng lên. Tôi đã là học sinh lớp 2 rồi cơ mà.",
+            questions: [
+              {
+                q: "1. Chi tiết nào cho thấy bạn nhỏ rất háo hức đến trường?",
+                options: ["Vùng dậy, chuẩn bị rất nhanh và muốn đến sớm nhất", "Ngủ nướng đợi bố mẹ gọi nhiều lần", "Ngồi một chỗ không muốn đến trường"],
+                correctIndex: 0
+              },
+              {
+                q: "2. Từ ngữ nào trong bài nói về các em học sinh lớp 1?",
+                options: ["Tự tin và chạy nhanh", "Rụt rè níu chặt tay bố mẹ", "Cười nói ríu rít giữa sân"],
+                correctIndex: 1
+              },
+              {
+                q: "3. Đứng trước các em lớp 1, bạn nhỏ cảm thấy thế nào?",
+                options: ["Thấy mình vẫn còn bé xíu", "Cảm thấy mình lớn bổng lên", "Thấy sợ sệt như năm ngoái"],
+                correctIndex: 1
+              }
+            ],
+            lesson: "🌱 Bài học: Bước lên lớp 2, em đã lớn khôn hơn! Hãy luôn tự giác, chăm ngoan và làm gương tốt cho các em lớp 1 nhé!"
+          },
+          {
+            id: "sgk_b4",
+            title: "Làm Việc Thật Là Vui ⏰",
+            summary: "Vạn vật xung quanh cùng làm việc có ích và niềm vui lao động của bạn nhỏ.",
+            storyText: "Quanh ta, mọi vật, mọi người đều làm việc.\nCái đồng hồ tích tắc, tích tắc, báo phút, báo giờ. Con gà trống gáy vang ò ó o, báo cho mọi người biết trời sắp sáng, mau mau thức dậy. Con tu hú kêu tu hú, tu hú. Thế là sắp đến mùa vải chín. Chim bắt sâu, bảo vệ mùa màng. Cành đào nở hoa cho sắc xuân thêm rực rỡ, ngày xuân thêm tưng bừng. Chim cú mèo chập tối đứng trong hốc cây rúc cú cú cũng làm việc có ích cho đồng ruộng.\nNhư mọi vật, mọi người, bé cũng làm việc. Bé làm bài. Bé đi học. Học xong, bé quét nhà, nhặt rau, chơi với em đỡ mẹ. Bé luôn luôn bận rộn, mà lúc nào cũng vui.",
+            questions: [
+              {
+                q: "1. Con gà trống gáy vang để làm gì?",
+                options: ["Báo mùa vải chín sắp đến", "Báo trời sắp sáng, giục mọi người mau thức dậy", "Bắt sâu bảo vệ mùa màng"],
+                correctIndex: 1
+              },
+              {
+                q: "2. Sau khi học xong, bạn nhỏ đã làm những việc gì giúp mẹ?",
+                options: ["Xem ti vi và đi ngủ", "Quét nhà, nhặt rau, chơi với em đỡ mẹ", "Chạy ra đồng hái hoa"],
+                correctIndex: 1
+              },
+              {
+                q: "3. Dù bận rộn làm việc, tâm trạng của bạn nhỏ thế nào?",
+                options: ["Cảm thấy mệt mỏi", "Lúc nào cũng cảm thấy rất vui", "Cảm thấy buồn bực"],
+                correctIndex: 1
+              }
+            ],
+            lesson: "🌻 Bài học: Lao động và giúp đỡ gia đình những việc vừa sức là niềm hạnh phúc. Làm việc chăm chỉ giúp cuộc sống luôn tràn ngập tiếng cười!"
+          },
+          {
+            id: "sgk_b9",
+            title: "Cô Giáo Lớp Em 👩‍🏫",
+            summary: "Bài thơ ngọt ngào thể hiện tình cảm yêu quý, kính trọng của học sinh đối với cô giáo.",
+            storyText: "Sáng nào em đến lớp\nCũng thấy cô đến rồi\nĐáp lời \"Chào cô ạ!\"\nCô mỉm cười thật tươi.\n\nCô dạy em tập viết\nGió đưa thoảng hương nhài\nNắng ghé vào cửa lớp\nXem chúng em học bài.\n\nNhững lời cô giáo giảng\nẤm trang vở thơm tho\nYêu thương em ngắm mãi\nNhững điểm mười cô cho.",
+            questions: [
+              {
+                q: "1. Mỗi khi học sinh chào cô, cô giáo đáp lại như thế nào?",
+                options: ["Cô gật đầu nghiêm nghị", "Cô mỉm cười thật tươi", "Cô vẫy tay từ xa"],
+                correctIndex: 1
+              },
+              {
+                q: "2. Cảnh vật nào ngoài thiên nhiên ghé xem các bạn học bài?",
+                options: ["Cơn mưa rào mùa hạ", "Nắng vàng ghé vào cửa lớp", "Đàn bướm bay lượn"],
+                correctIndex: 1
+              },
+              {
+                q: "3. Bạn nhỏ ngắm mãi điều gì trong trang vở của mình?",
+                options: ["Những điểm mười cô cho", "Bức tranh vẽ phong cảnh", "Chiếc nhãn vở xinh xắn"],
+                correctIndex: 0
+              }
+            ],
+            lesson: "💖 Bài học: Thầy cô luôn yêu thương và tận tình dạy dỗ chúng em nên người. Hãy luôn chăm chỉ học tập để đền đáp công ơn thầy cô nhé!"
+          },
+          {
+            id: "sgk_b11",
+            title: "Cái Trống Trường Em 🥁",
+            summary: "Chiếc trống trường thân thương như người bạn ngóng chờ học sinh bước vào năm học mới.",
+            storyText: "Cái trống trường em\nMùa hè cũng nghỉ\nSuốt ba tháng liền\nTrống nằm ngẫm nghĩ.\n\nBuồn không hả trống\nTrong những ngày hè\nBọn mình đi vắng\nChỉ còn tiếng ve?\n\nCái trống lặng im\nNghiêng đầu trên giá\nChắc thấy chúng em\nNó mừng vui quá!\n\nKìa trống đang gọi:\nTùng! Tùng! Tùng! Tùng!\nVào năm học mới\nGiọng vang tưng bừng.",
+            questions: [
+              {
+                q: "1. Suốt ba tháng hè vắng bóng học sinh, cái trống nằm làm gì?",
+                options: ["Trống kêu vang liên tục", "Trống nằm ngẫm nghĩ trên giá", "Trống được mang đi cất vào kho"],
+                correctIndex: 1
+              },
+              {
+                q: "2. Khi gặp lại các bạn học sinh vào năm học mới, trống cảm thấy thế nào?",
+                options: ["Nó mừng vui quá", "Nó vẫn còn buồn", "Nó sợ tiếng ồn"],
+                correctIndex: 0
+              },
+              {
+                q: "3. Tiếng trống 'Tùng! Tùng! Tùng! Tùng!' báo hiệu điều gì?",
+                options: ["Đến giờ ra chơi", "Báo hiệu bước vào năm học mới tưng bừng", "Đến giờ tan học về nhà"],
+                correctIndex: 1
+              }
+            ],
+            lesson: "🏫 Bài học: Trường học và từng đồ vật thân thương luôn là người bạn đồng hành ấm áp trong suốt những năm tháng tuổi thơ của em."
+          }
+        ]
+      },
+
+      // ☀️ MỨC 2 – ĐỌC KHÁ
+      level2: {
+        badgeText: "Mức 2 – Đọc khá 🐰",
+        badgeBg: "bg-amber-500",
+        stories: [
+          {
+            id: "sgk_b3",
+            title: "Niềm Vui Của Bi Và Bống 🌈",
+            summary: "Tình anh em ấm áp và ước mơ hồn nhiên dưới chân cầu vồng sau cơn mưa.",
+            storyText: "Khi cơn mưa vừa dứt, hai anh em Bi và Bống chợt thấy cầu vồng. \"Cầu vồng kia! Em nhìn xem. Đẹp quá!\".\nBi chỉ lên bầu trời và nói tiếp: \"Anh nghe nói dưới chân cầu vồng có bảy hũ vàng đấy.\".\nBống hưởng ứng: \"Lát nữa, mình sẽ đi lấy về nhé! Có vàng rồi, em sẽ mua nhiều búp bê và quần áo đẹp.\".\n\"Còn anh sẽ mua một con ngựa hồng và một cái ô tô.\".\nBỗng nhiên, cầu vồng biến mất. Bi cười: \"Em ơi! Anh đùa đấy! Ở đó không có vàng đâu.\".\nBống vui vẻ: \"Thế ạ? Nếu vậy, em sẽ lấy bút màu để vẽ tặng anh ngựa hồng và ô tô.\".\n\"Còn anh sẽ vẽ tặng em nhiều búp bê và quần áo đủ các màu sắc.\".\nKhông có bảy hũ vàng dưới chân cầu vồng, hai anh em vẫn cười vui vẻ.",
+            questions: [
+              {
+                q: "1. Bi kể cho Bống nghe điều gì về chân cầu vồng?",
+                options: ["Có một ngôi nhà cổ tích", "Có bảy hũ vàng", "Có cánh đồng hoa rực rỡ"],
+                correctIndex: 1
+              },
+              {
+                q: "2. Khi cầu vồng biến mất, hai anh em đã quyết định làm gì cho nhau?",
+                options: ["Hai anh em ngồi khóc tiếc nuối", "Lấy bút màu vẽ tranh tặng nhau món đồ bạn thích", "Chạy vào nhà xem ti vi"],
+                correctIndex: 1
+              },
+              {
+                q: "3. Vì sao không có bảy hũ vàng mà hai anh em vẫn cười vui vẻ?",
+                options: ["Vì hai bạn tìm được đồ chơi khác", "Vì hai anh em luôn yêu thương, quan tâm và chia sẻ cùng nhau", "Vì trời lại đổ mưa rào"],
+                correctIndex: 1
+              }
+            ],
+            lesson: "💖 Bài học: Tình cảm anh chị em trong gia đình là món quà vô giá. Sự quan tâm, nhường nhịn và sẻ chia mang lại niềm vui lớn hơn mọi của cải vật chất!"
+          },
+          {
+            id: "sgk_b5",
+            title: "Em Có Xinh Không? 🐘",
+            summary: "Hành trình đi tìm vẻ đẹp và sự tự tin đúng với chính mình của chú voi con.",
+            storyText: "Voi em thích mặc đẹp và thích được khen xinh. Ở nhà, voi em luôn hỏi anh: \"Em có xinh không?\". Voi anh bao giờ cũng khen: \"Em xinh lắm!\".\nMột hôm, gặp hươu, voi em hỏi: \"Em có xinh không?\". Hươu ngắm voi rồi lắc đầu: \"Chưa xinh lắm vì em không có đôi sừng giống anh.\". Nghe vậy, voi nhặt vài cành cây khô, gài lên đầu rồi đi tiếp.\nGặp dê, voi hỏi: \"Em có xinh không?\". Dê bảo: \"Không, vì cậu không có bộ râu giống tôi.\". Voi liền nhổ một khóm cỏ dại bên đường, gắn vào cằm rồi về nhà.\nVề nhà với đôi sừng và bộ râu giả, voi em hớn hở hỏi anh: \"Em có xinh hơn không?\". Voi anh nói: \"Trời ơi, sao em lại thêm sừng và râu thế này? Xấu lắm!\". Voi em ngắm mình trong gương và thấy xấu thật. Sau khi bỏ sừng và râu đi, voi em thấy mình xinh đẹp hẳn lên. Giờ đây, voi em hiểu rằng mình chỉ xinh đẹp khi đúng là voi.",
+            questions: [
+              {
+                q: "1. Nghe lời hươu và dê, voi em đã làm gì để làm đẹp cho mình?",
+                options: ["Gài cành cây làm sừng và gắn khóm cỏ làm râu", "Đi mua quần áo mới", "Tắm rửa sạch sẽ ở bờ suối"],
+                correctIndex: 0
+              },
+              {
+                q: "2. Khi nhìn thấy voi em gắn sừng và râu giả, voi anh đã nói gì?",
+                options: ["Khen voi em xinh hơn nhiều", "Bảo trông xấu lắm và khuyên bỏ ra", "Bảo voi em đi khoe các bạn"],
+                correctIndex: 1
+              },
+              {
+                q: "3. Cuối cùng, voi em đã nhận ra bài học gì?",
+                options: ["Phải có sừng thật to mới đẹp", "Mình chỉ thực sự xinh đẹp khi là chính mình", "Cần phải bắt chước theo tất cả các bạn"],
+                correctIndex: 1
+              }
+            ],
+            lesson: "🌟 Bài học: Mỗi người đều có nét đẹp riêng biệt đáng quý. Hãy luôn tự tin, yêu quý và tôn trọng giá trị của chính bản thân mình!"
+          },
+          {
+            id: "sgk_b6",
+            title: "Một Giờ Học 🙋‍♂️",
+            summary: "Cậu bé Quang vượt qua sự ngượng ngùng để tự tin phát biểu lưu loát trước lớp.",
+            storyText: "Thầy giáo nói: \"Chúng ta cần học cách giao tiếp tự tin. Vì thế hôm nay chúng ta sẽ tập nói trước lớp về bất cứ điều gì mình thích.\".\nQuang được mời lên nói đầu tiên. Cậu lúng túng, đỏ mặt. Quang cảm thấy nói với bạn bên cạnh thì dễ, nhưng nói trước cả lớp thì sao mà khó thế. Thầy bảo: \"Em cố nhớ xem, sáng nay ngủ dậy, em đã làm gì?\". Quang ngập ngừng, vừa nói vừa gãi đầu: \"Em...\".\nThầy giáo nhắc: \"Rồi gì nữa?\". Quang lại gãi đầu: \"À... Em ngủ dậy.\". Và cậu nói tiếp: \"Rồi...\". Thầy giáo mỉm cười, kiên nhẫn nghe Quang nói. Thầy bảo: \"Thế là được rồi đấy!\". Nhưng Quang chưa chịu về chỗ. Bỗng cậu nói to: \"Rồi sau đó...\". Quang thở mạnh một hơi rồi nói tiếp: \"Mẹ bảo: Con đánh răng đi. Thế là em đánh răng.\". Thầy giáo vỗ tay. Cả lớp vỗ tay theo. Cuối cùng, Quang nói với giọng rất tự tin: \"Sau đó bố đưa em đi học.\".\nThầy giáo vỗ tay. Các bạn vỗ tay theo. Quang cũng vỗ tay. Cả lớp tràn ngập tiếng vỗ tay.",
+            questions: [
+              {
+                q: "1. Vì sao lúc đầu được mời lên bảng Quang lại lúng túng, đỏ mặt?",
+                options: ["Vì Quang chưa thuộc bài", "Vì Quang thấy nói trước cả lớp khó và ngượng ngùng", "Vì Quang bị đau họng"],
+                correctIndex: 1
+              },
+              {
+                q: "2. Thầy giáo đã giúp Quang bình tĩnh bằng cách nào?",
+                options: ["Yêu cầu Quang về chỗ ngay", "Mỉm cười, kiên nhẫn lắng nghe và gợi ý cho Quang", "Gọi bạn khác lên thay"],
+                correctIndex: 1
+              },
+              {
+                q: "3. Điều gì đã giúp Quang tự tin và nói lưu loát hơn?",
+                options: ["Sự kiên nhẫn của thầy và tràng pháo tay cổ vũ của cả lớp", "Chiếc kẹo của bạn bên cạnh", "Tiếng trống tan trường vang lên"],
+                correctIndex: 0
+              }
+            ],
+            lesson: "👏 Bài học: Đừng sợ hãi khi đứng trước đám đông! Nhờ sự rèn luyện và sự cổ vũ ấm áp của thầy cô, bạn bè, em sẽ ngày càng tự tin hơn."
+          },
+          {
+            id: "sgk_b8",
+            title: "Cầu Thủ Dự Bị ⚽",
+            summary: "Sự kiên trì rèn luyện của chú gấu con từ vị trí dự bị đến cầu thủ xuất sắc.",
+            storyText: "Nhìn các bạn đá bóng, gấu con rất muốn chơi cùng. Nhưng thấy gấu con có vẻ chậm chạp và đá bóng không tốt nên chưa đội nào muốn nhận cậu. \"Gấu à, cậu làm cầu thủ dự bị nhé!\" – Khỉ nói. Gấu con hơi buồn nhưng cũng đồng ý. Trong khi chờ được vào sân, gấu đi nhặt bóng cho các bạn. Gấu cố gắng chạy thật nhanh để các bạn không phải chờ lâu.\nHằng ngày, gấu đến sân bóng từ sớm để luyện tập. Gấu đá bóng ra xa, chạy đi nhặt rồi đá vào gôn, đá đi đá lại,... Cứ thế, gấu đá bóng ngày càng giỏi hơn.\nMột hôm, đến sân bóng thấy gấu đang luyện tập, các bạn ngạc nhiên nhìn gấu rồi nói: \"Cậu giỏi quá!\", \"Này, vào đội tớ nhé!\", \"Vào đội tớ đi!\". \"Tớ nên vào đội nào đây?\" – Gấu hỏi khỉ. \"Hiệp đầu cậu đá cho đội đỏ, hiệp sau cậu đá cho đội xanh.\" – Khỉ nói. Gấu vui vẻ gật đầu. Cậu nghĩ: \"Hoá ra làm cầu thủ dự bị cũng hay nhỉ!\".",
+            questions: [
+              {
+                q: "1. Vì sao ban đầu chưa đội bóng nào muốn nhận gấu con?",
+                options: ["Vì gấu con đến muộn", "Vì gấu con có vẻ chậm chạp và chưa đá bóng giỏi", "Vì gấu không có trang phục thể thao"],
+                correctIndex: 1
+              },
+              {
+                q: "2. Khi làm cầu thủ dự bị, gấu con đã chăm chỉ làm gì?",
+                options: ["Ngồi một chỗ than vãn", "Nhặt bóng giúp bạn và hằng ngày dậy sớm luyện tập đá bóng", "Bỏ về nhà chơi đồ chơi"],
+                correctIndex: 1
+              },
+              {
+                q: "3. Vì sao cuối cùng cả hai đội bóng đều tranh nhau mời gấu con?",
+                options: ["Vì gấu có quả bóng mới", "Vì gấu đã kiên trì rèn luyện và đá bóng rất giỏi", "Vì gấu là bạn thân của khỉ"],
+                correctIndex: 1
+              }
+            ],
+            lesson: "🏆 Bài học: Có công mài sắt, có ngày nên kim! Không nản lòng trước thử thách, chăm chỉ luyện tập sẽ giúp em đạt được thành công rực rỡ!"
+          }
+        ]
+      },
+
+      // 🚀 MỨC 3 – ĐỌC TỐT
+      level3: {
+        badgeText: "Mức 3 – Đọc tốt 🦁",
+        badgeBg: "bg-orange-500",
+        stories: [
+          {
+            id: "sgk_b7",
+            title: "Cây Xấu Hổ 🌿",
+            summary: "Cái nhìn e ấp của cây xấu hổ và sự tiếc nuối khi bỏ lỡ chú chim xanh tuyệt đẹp.",
+            storyText: "Bỗng dưng, gió ào ào nổi lên. Có tiếng động gì lạ lắm. Những chiếc lá khô lạt xạt lướt trên cỏ. Cây xấu hổ co rúm mình lại.\nNó bỗng thấy xung quanh xôn xao. Nó hé mắt nhìn: không có gì lạ cả. Bấy giờ, nó mới mở bùng những con mắt lá. Quả nhiên, không có gì lạ thật.\nNhưng những cây cỏ xung quanh vẫn cứ xôn xao. Thì ra, vừa có một con chim xanh biếc, toàn thân lóng lánh như tự toả sáng không biết từ đâu bay tới. Chim đậu một thoáng trên cành thanh mai rồi lại vội bay đi. Các cây cỏ xuýt xoa: biết bao nhiêu con chim đã bay qua đây, chưa có con nào đẹp đến thế.\nCàng nghe bạn bè trầm trồ, cây xấu hổ càng tiếc. Không biết bao giờ con chim xanh ấy quay trở lại?",
+            questions: [
+              {
+                q: "1. Nghe tiếng gió nổi lên và tiếng lá khô lạt xạt, cây xấu hổ đã làm gì?",
+                options: ["Nở hoa rực rỡ", "Co rúm mình lại vì sợ hãi", "Vẫy cành đu đưa theo gió"],
+                correctIndex: 1
+              },
+              {
+                q: "2. Cây cỏ xung quanh xôn xao, xuýt xoa về điều gì?",
+                options: ["Về một cơn mưa rào mát rượi", "Về một con chim xanh biếc, lóng lánh tuyệt đẹp vừa ghé qua", "Về một bông hoa mới nở"],
+                correctIndex: 1
+              },
+              {
+                q: "3. Vì sao cây xấu hổ lại cảm thấy vô cùng tiếc nuối?",
+                options: ["Vì bị rụng mất cành lá", "Vì nhút nhát nhắm mắt nên đã bỏ lỡ cơ hội ngắm chú chim xanh", "Vì các bạn không chơi cùng"],
+                correctIndex: 1
+              }
+            ],
+            lesson: "🍃 Bài học: Hãy mở lòng và bớt nhút nhát trước thế giới xung quanh, để em không bỏ lỡ những điều kì diệu và tươi đẹp của cuộc sống!"
+          },
+          {
+            id: "sgk_b18",
+            title: "Tớ Nhớ Cậu ✉️",
+            summary: "Tình bạn chân thành, ấm áp giữa sóc và kiến qua những dòng thư tay đong đầy nỗi nhớ.",
+            storyText: "Kiến là bạn thân của sóc. Hằng ngày, hai bạn thường rủ nhau đi học. Thế rồi nhà kiến chuyển đến một khu rừng khác. Lúc chia tay, kiến rất buồn. Kiến nói: \"Cậu phải thường xuyên nhớ tớ đấy.\". Sóc gật đầu nhận lời.\nMột buổi sáng, sóc lấy một tờ giấy và viết thư cho kiến. Sóc nắn nót ghi: \"Tớ nhớ cậu.\". Một cơn gió đi ngang qua mang theo lá thư. Chiều hôm đó, kiến đi dạo trong rừng. Một lá thư nhè nhẹ bay xuống. Kiến reo lên: \"A, thư của sóc!\".\nHôm sau, kiến ngồi bên thềm và viết thư cho sóc. Kiến không biết làm sao cho sóc biết mình rất nhớ bạn. Cậu viết: \"Chào sóc!\". Nhưng kiến không định chào sóc. Cậu bèn viết một lá thư khác: \"Sóc thân mến!\". Như thế vẫn không đúng ý của kiến. Lấy một tờ giấy mới, kiến ghi: \"Sóc ơi!\". Cứ thế, cậu cặm cụi viết đi viết lại trong nhiều giờ liền.\nKhông lâu sau, sóc nhận được một lá thư do kiến gửi đến. Thư viết: \"Sóc ơi, tớ cũng nhớ cậu!\".",
+            questions: [
+              {
+                q: "1. Vì sao đôi bạn thân sóc và kiến phải chia tay nhau?",
+                options: ["Vì hai bạn giận nhau", "Vì nhà kiến chuyển sang một khu rừng khác", "Vì đến kì nghỉ hè"],
+                correctIndex: 1
+              },
+              {
+                q: "2. Sóc đã làm cách nào để gửi bức thư 'Tớ nhớ cậu' đến cho kiến?",
+                options: ["Nhờ bác bồ câu đưa thư", "Nhờ một cơn gió đi ngang qua mang lá thư bay đi", "Tự mình chạy sang khu rừng bên kia"],
+                correctIndex: 1
+              },
+              {
+                q: "3. Bức thư cuối cùng kiến gửi cho sóc viết câu gì?",
+                options: ["Chúc cậu học giỏi nhé!", "Chào cậu, hẹn gặp lại!", "Sóc ơi, tớ cũng nhớ cậu!"],
+                correctIndex: 2
+              }
+            ],
+            lesson: "💌 Bài học: Tình bạn thật trong sáng và đáng quý! Dù ở xa nhau, sự quan tâm chân thành và những lời hỏi thăm sẽ luôn giữ cho tình bạn bền chặt."
+          },
+          {
+            id: "sgk_b20",
+            title: "Nhím Nâu Kết Bạn 🦔",
+            summary: "Lòng tốt và sự chân thành sưởi ấm mùa đông giá rét của đôi bạn nhím nâu và nhím trắng.",
+            storyText: "Trong khu rừng nọ, có chú nhím nâu hiền lành, nhút nhát. Một buổi sáng, chú đang kiếm quả cây thì thấy nhím trắng chạy tới. Nhím trắng vồn vã: \"Chào bạn! Rất vui được gặp bạn!\". Nhím nâu lúng túng, nói lí nhí: \"Chào bạn!\", rồi nấp vào bụi cây. Chú cuộn tròn người lại mà vẫn sợ hãi.\nMùa đông đến, nhím nâu đi tìm nơi để trú ngụ. Bất chợt, mưa kéo đến. Nhím nâu vội bước vào cái hang nhỏ. Thì ra là nhà nhím trắng. Nhím nâu run run: \"Xin lỗi, tôi không biết đây là nhà của bạn.\". Nhím trắng tươi cười: \"Đừng ngại! Gặp lại bạn, tôi rất vui. Tôi ở đây một mình, buồn lắm. Bạn ở lại cùng tôi nhé!\".\n\"Nhím trắng tốt bụng quá. Bạn ấy nói đúng, không có bạn bè thì thật buồn.\". Nghĩ thế, nhím nâu mạnh dạn hẳn lên. Chú nhận lời kết bạn với nhím trắng. Cả hai cùng thu dọn, trang trí chỗ ở cho đẹp. Chúng trải qua những ngày vui vẻ, ấm áp vì không phải sống một mình giữa mùa đông lạnh giá.",
+            questions: [
+              {
+                q: "1. Lần đầu tiên gặp nhím trắng, nhím nâu đã có phản ứng thế nào?",
+                options: ["Chạy lại bắt tay vui vẻ", "Lúng túng, nói lí nhí rồi sợ hãi cuộn tròn nấp vào bụi cây", "Mời bạn về nhà ăn quả"],
+                correctIndex: 1
+              },
+              {
+                q: "2. Khi nhím nâu tình cờ bước vào hang trú mưa, nhím trắng đã đối đãi ra sao?",
+                options: ["Đuổi nhím nâu ra ngoài", "Tươi cười chào đón và mời nhím nâu ở lại sống cùng cho đỡ buồn", "Không thèm nói chuyện"],
+                correctIndex: 1
+              },
+              {
+                q: "3. Nhờ đâu mà nhím nâu và nhím trắng có một mùa đông vui vẻ, ấm áp?",
+                options: ["Vì kiếm được nhiều quả cây tích trữ", "Vì có bạn bè sẻ chia, yêu thương và giúp đỡ lẫn nhau", "Vì chiếc hang rất rộng"],
+                correctIndex: 1
+              }
+            ],
+            lesson: "🤝 Bài học: Sự thân thiện, cởi mở và lòng tốt sẽ xua tan nỗi sợ hãi, mang lại tình bạn ấm áp xua tan mọi giá lạnh mùa đông!"
+          },
+          {
+            id: "sgk_b2",
+            title: "Ngày Hôm Qua Đâu Rồi? 🗓️",
+            summary: "Bài thơ triết lý nhẹ nhàng nhắc nhở bé biết quý trọng từng giây phút và chăm chỉ học hành.",
+            storyText: "Em cầm tờ lịch cũ:\n- Ngày hôm qua đâu rồi?\nRa ngoài sân hỏi bố\nXoa đầu em, bố cười.\n\n- Ngày hôm qua ở lại\nTrên cành hoa trong vườn\nNụ hồng lớn lên mãi\nĐợi đến ngày toả hương.\n\n- Ngày hôm qua ở lại\nTrong hạt lúa mẹ trồng\nCánh đồng chờ gặt hái\nChín vàng màu ước mong.\n\n- Ngày hôm qua ở lại\nTrong vở hồng của con\nCon học hành chăm chỉ\nLà ngày qua vẫn còn.",
+            questions: [
+              {
+                q: "1. Bạn nhỏ cầm tờ lịch cũ ra sân hỏi bố điều gì?",
+                options: ["Hôm nay là thứ mấy?", "Ngày hôm qua đâu rồi?", "Bao giờ thì đến Tết?"],
+                correctIndex: 1
+              },
+              {
+                q: "2. Theo lời bố, ngày hôm qua ở lại những nơi nào?",
+                options: ["Trên cành hoa, trong hạt lúa mẹ trồng và trong trang vở hồng của con", "Trong chiếc đồng hồ treo tường", "Ở ngoài bến xe"],
+                correctIndex: 0
+              },
+              {
+                q: "3. Bố dặn bạn nhỏ làm gì để 'ngày qua vẫn còn'?",
+                options: ["Giữ thật nhiều tờ lịch cũ", "Học hành chăm chỉ mỗi ngày", "Đi ngủ thật sớm"],
+                correctIndex: 1
+              }
+            ],
+            lesson: "⏳ Bài học: Thời gian trôi qua không bao giờ trở lại. Nhưng khi em chăm chỉ học tập và làm việc có ích, mỗi ngày trôi qua đều để lại những thành quả ngọt ngào!"
+          }
+        ]
+      }
+    };
+
+    let currentLevel = 1;
+    let currentStoryIndex = 0;
+    let currentStoryData = READING_DATA.level1.stories[0];
+    
+    // Tính toán kích thước chữ ban đầu tối ưu cho điện thoại vs màn hình to
+    const isMobile = window.innerWidth < 640;
+    let currentFontSize = isMobile ? 22 : 28; 
+
+    let ttsRate = 0.85;
+    let isSpeaking = false;
+    let currentAudioElement = null;
+    let audioCache = {};
+
+    // Biến đồng hồ 60s
+    let timerDuration = 60;
+    let timerTimeLeft = 60;
+    let timerInterval = null;
+    let isTimerRunning = false;
+
+    // Trắc nghiệm
+    let answeredQuestions = [false, false, false];
+
+    // Ghi âm và so khớp từ
+    let isChildRecording = false;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let childAudioBlob = null;
+    let childAudioUrl = null;
+    let speechRecognitionInstance = null;
+    let childSpokenTranscript = "";
+    let detectedWrongWords = [];
+    let storyWordObjects = [];
+
+    // =========================================================================
+    // CHUYỂN MÀN HÌNH (SCREENS)
+    // =========================================================================
+    function hideAllScreens() {
+      document.getElementById('screenLevels').classList.add('hidden');
+      document.getElementById('screenStoryPicker').classList.add('hidden');
+      document.getElementById('screenReading').classList.add('hidden');
+      document.getElementById('screenQuiz').classList.add('hidden');
+      document.getElementById('screenLesson').classList.add('hidden');
+      stopReadAloud();
+      stopChildRecording(false);
+      stopChildPlayback();
+      resetTimer();
+    }
+
+    function goToHome() {
+      hideAllScreens();
+      document.getElementById('screenLevels').classList.remove('hidden');
+      document.getElementById('headerHomeBtn').classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function selectLevel(levelNum) {
+      currentLevel = levelNum;
+      openStoryPicker(levelNum);
+    }
+
+    function openStoryPicker(levelNum) {
+      hideAllScreens();
+      currentLevel = levelNum;
+      const levelData = READING_DATA[`level${levelNum}`];
+
+      const badge = document.getElementById('pickerLevelBadge');
+      badge.textContent = levelData.badgeText;
+      badge.className = `text-base sm:text-xl font-black px-4 py-1 rounded-full text-white ${levelData.badgeBg}`;
+
+      const listContainer = document.getElementById('storyCardsList');
+      listContainer.innerHTML = '';
+
+      levelData.stories.forEach((story, index) => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-4 sm:p-5 rounded-3xl border-2 sm:border-3 border-amber-200 shadow-sm flex flex-col justify-between text-left gap-2 sm:gap-3";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+              <span class="bg-amber-100 text-amber-900 text-xs sm:text-sm font-extrabold px-3 py-0.5 rounded-xl">Bài ${index + 1}</span>
+              <span class="text-xl sm:text-2xl">✨</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-black text-slate-800 leading-snug mb-1">${story.title}</h3>
+            <p class="text-xs sm:text-sm font-bold text-slate-600 line-clamp-2">${story.summary || ''}</p>
+          </div>
+          <button onclick="startReadingStory(${levelNum}, ${index})" class="btn-tactile w-full py-2.5 sm:py-3 px-3 rounded-2xl font-black text-base sm:text-lg text-white ${levelData.badgeBg} flex items-center justify-center gap-1.5 cursor-pointer mt-1">
+            <span>Bắt đầu đọc</span>
+            <span>👉</span>
+          </button>
+        `;
+        listContainer.appendChild(card);
+      });
+
+      document.getElementById('screenStoryPicker').classList.remove('hidden');
+      document.getElementById('headerHomeBtn').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function startReadingStory(levelNum, storyIdx) {
+      currentLevel = levelNum;
+      currentStoryIndex = storyIdx;
+      const levelGroup = READING_DATA[`level${levelNum}`];
+      currentStoryData = levelGroup.stories[storyIdx];
+
+      document.getElementById('levelBadge').textContent = `${levelGroup.badgeText} • Bài ${storyIdx + 1}`;
+      document.getElementById('levelBadge').className = `text-sm sm:text-xl font-black px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-white ${levelGroup.badgeBg}`;
+      document.getElementById('storyTitle').textContent = currentStoryData.title;
+      
+      renderStoryInteractiveWords(currentStoryData.storyText);
+      applyFontSize();
+
+      document.getElementById('correctWordsInput').value = '';
+      document.getElementById('wpmResult').textContent = '0';
+      resetChildReadingState();
+
+      hideAllScreens();
+      document.getElementById('screenReading').classList.remove('hidden');
+      document.getElementById('headerHomeBtn').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function nextStoryInLevel() {
+      const levelGroup = READING_DATA[`level${currentLevel}`];
+      let nextIdx = (currentStoryIndex + 1) % levelGroup.stories.length;
+      startReadingStory(currentLevel, nextIdx);
+    }
+
+    function goToQuiz() {
+      stopReadAloud();
+      stopChildRecording(false);
+      stopChildPlayback();
+      renderQuiz();
+      hideAllScreens();
+      document.getElementById('screenQuiz').classList.remove('hidden');
+      document.getElementById('headerHomeBtn').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goToLesson() {
+      document.getElementById('lessonText').textContent = currentStoryData.lesson;
+      hideAllScreens();
+      document.getElementById('screenLesson').classList.remove('hidden');
+      document.getElementById('headerHomeBtn').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // =========================================================================
+    // ĐIỀU CHỈNH CỠ CHỮ LINH HOẠT
+    // =========================================================================
+    function changeFontSize(delta) {
+      currentFontSize += delta;
+      const minSize = window.innerWidth < 640 ? 18 : 24;
+      if (currentFontSize < minSize) currentFontSize = minSize;
+      if (currentFontSize > 44) currentFontSize = 44;
+      applyFontSize();
+    }
+
+    function applyFontSize() {
+      const el = document.getElementById('storyContent');
+      if (el) {
+        el.style.fontSize = `${currentFontSize}px`;
+        el.style.lineHeight = `${Math.round(currentFontSize * 1.65)}px`;
+      }
+    }
+
+    // =========================================================================
+    // TƯƠNG TÁC TỪNG TỪ: CHẠM VÀO ĐỂ NGHE CÔ ĐỌC
+    // =========================================================================
+    function renderStoryInteractiveWords(text) {
+      const storyContentEl = document.getElementById('storyContent');
+      storyContentEl.innerHTML = '';
+      storyWordObjects = [];
+
+      const tokens = text.split(/(\s+)/);
+      let wordIndex = 0;
+
+      tokens.forEach(token => {
+        if (/^\s+$/.test(token)) {
+          storyContentEl.appendChild(document.createTextNode(token));
+        } else if (token.length > 0) {
+          const match = token.match(/^([^\p{L}\p{N}]*)([\p{L}\p{N}\-]+)([^\p{L}\p{N}]*)$/u);
+          if (match) {
+            const prefix = match[1];
+            const cleanWord = match[2];
+            const suffix = match[3];
+
+            if (prefix) storyContentEl.appendChild(document.createTextNode(prefix));
+
+            const span = document.createElement('span');
+            span.className = 'word-token';
+            span.id = `storyWord_${wordIndex}`;
+            span.textContent = cleanWord;
+            span.title = `Chạm để nghe cô đọc: "${cleanWord}"`;
+            
+            span.onclick = () => {
+              guideSingleWord(cleanWord, span);
+            };
+
+            storyContentEl.appendChild(span);
+            if (suffix) storyContentEl.appendChild(document.createTextNode(suffix));
+
+            storyWordObjects.push({
+              index: wordIndex,
+              word: cleanWord,
+              lower: cleanWord.toLowerCase(),
+              spanId: `storyWord_${wordIndex}`
+            });
+
+            wordIndex++;
+          } else {
+            storyContentEl.appendChild(document.createTextNode(token));
+          }
+        }
+      });
+    }
+
+    function resetChildReadingState() {
+      childAudioBlob = null;
+      childAudioUrl = null;
+      detectedWrongWords = [];
+      childSpokenTranscript = "";
+
+      const playbackBtn = document.getElementById('playbackChildBtn');
+      playbackBtn.disabled = true;
+      playbackBtn.className = "btn-tactile bg-slate-200 text-slate-400 text-base sm:text-xl font-black px-4 py-3 sm:px-6 sm:py-3.5 rounded-2xl flex items-center justify-center gap-2.5 cursor-not-allowed";
+      document.getElementById('playbackIcon').textContent = '🎧';
+      document.getElementById('playbackText').textContent = 'Nghe lại giọng bé đọc';
+
+      document.getElementById('recordingFeedback').classList.add('hidden');
+      document.getElementById('wrongWordsContainer').classList.add('hidden');
+      document.getElementById('wrongWordsList').innerHTML = '';
+
+      storyWordObjects.forEach(obj => {
+        const span = document.getElementById(obj.spanId);
+        if (span) {
+          span.className = 'word-token';
+        }
+      });
+    }
+
+    async function toggleChildRecording() {
+      if (isChildRecording) {
+        stopChildRecording(true);
+      } else {
+        await startChildRecording();
+      }
+    }
+
+    async function startChildRecording() {
+      stopReadAloud();
+      stopChildPlayback();
+      resetChildReadingState();
+
+      const recordBtn = document.getElementById('recordBtn');
+      const micStatus = document.getElementById('micStatusBadge');
+      
+      try {
+        // Tối ưu hóa request micro trên di động iOS / Android
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        audioChunks = [];
+        const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'];
+        let supportedMime = mimeTypes.find(m => MediaRecorder.isTypeSupported(m)) || '';
+
+        mediaRecorder = supportedMime ? new MediaRecorder(stream, { mimeType: supportedMime }) : new MediaRecorder(stream);
+        
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) {
+            audioChunks.push(e.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          childAudioBlob = new Blob(audioChunks, { type: supportedMime || 'audio/webm' });
+          childAudioUrl = URL.createObjectURL(childAudioBlob);
+          const player = document.getElementById('childAudioPlayer');
+          player.src = childAudioUrl;
+
+          const playbackBtn = document.getElementById('playbackChildBtn');
+          playbackBtn.disabled = false;
+          playbackBtn.className = "btn-tactile bg-sky-500 active:bg-sky-600 text-white text-base sm:text-xl font-black px-4 py-3 sm:px-6 sm:py-3.5 rounded-2xl flex items-center justify-center gap-2.5 cursor-pointer";
+        };
+
+        mediaRecorder.start();
+        isChildRecording = true;
+
+        childSpokenTranscript = "";
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRec) {
+          try {
+            speechRecognitionInstance = new SpeechRec();
+            speechRecognitionInstance.lang = 'vi-VN';
+            speechRecognitionInstance.continuous = true;
+            speechRecognitionInstance.interimResults = true;
+
+            speechRecognitionInstance.onresult = (event) => {
+              let fullText = "";
+              for (let i = 0; i < event.results.length; i++) {
+                fullText += event.results[i][0].transcript + " ";
+              }
+              childSpokenTranscript = fullText.trim();
+            };
+
+            speechRecognitionInstance.start();
+          } catch (e) {
+            console.log("Speech recognition khởi động tự do:", e);
+          }
+        }
+
+        recordBtn.className = "btn-tactile bg-rose-500 active:bg-rose-600 text-white text-base sm:text-xl font-black px-4 py-3 sm:px-6 sm:py-3.5 rounded-2xl flex items-center justify-center gap-2.5 cursor-pointer mic-recording-pulse";
+        document.getElementById('recordBtnIcon').textContent = '⏹️';
+        document.getElementById('recordBtnText').textContent = 'Bé đọc xong (Bấm dừng)';
+
+        micStatus.classList.remove('hidden');
+      } catch (err) {
+        console.warn("Lỗi micro hoặc chưa cấp quyền:", err);
+        const feedback = document.getElementById('recordingFeedback');
+        feedback.className = "p-3 sm:p-4 rounded-2xl border-2 bg-amber-100 text-amber-950 border-amber-300 pop-in";
+        document.getElementById('recordingFeedbackIcon').textContent = '🎤';
+        document.getElementById('recordingFeedbackText').textContent = 'Bé hãy bấm "Cho phép" để điện thoại/máy tính mở micro thu âm nhé!';
+        feedback.classList.remove('hidden');
+      }
+    }
+
+    function stopChildRecording(processAnalysis = true) {
+      if (!isChildRecording) return;
+      isChildRecording = false;
+
+      const recordBtn = document.getElementById('recordBtn');
+      recordBtn.className = "btn-tactile bg-emerald-600 active:bg-emerald-700 text-white text-base sm:text-xl font-black px-4 py-3 sm:px-6 sm:py-3.5 rounded-2xl flex items-center justify-center gap-2.5 cursor-pointer";
+      document.getElementById('recordBtnIcon').textContent = '🎙️';
+      document.getElementById('recordBtnText').textContent = 'Bé bấm để đọc lại';
+
+      document.getElementById('micStatusBadge').classList.add('hidden');
+
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      }
+
+      if (speechRecognitionInstance) {
+        try {
+          speechRecognitionInstance.stop();
+        } catch (e) {}
+      }
+
+      if (processAnalysis) {
+        setTimeout(() => {
+          analyzeChildReading();
+        }, 500);
+      }
+    }
+
+    function normalizeWord(w) {
+      return w.toLowerCase()
+              .normalize("NFC")
+              .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"'—]/g, "")
+              .trim();
+    }
+
+    function analyzeChildReading() {
+      const feedback = document.getElementById('recordingFeedback');
+      const feedbackText = document.getElementById('recordingFeedbackText');
+      const feedbackIcon = document.getElementById('recordingFeedbackIcon');
+      const wrongContainer = document.getElementById('wrongWordsContainer');
+      const wrongList = document.getElementById('wrongWordsList');
+
+      const spokenWords = childSpokenTranscript
+        .split(/\s+/)
+        .map(w => normalizeWord(w))
+        .filter(w => w.length > 0);
+
+      let treatedSpoken = spokenWords;
+      if (treatedSpoken.length === 0) {
+        feedback.className = "p-3 sm:p-4 rounded-2xl border-2 bg-amber-50 text-amber-950 border-amber-300 pop-in";
+        feedbackIcon.textContent = '🌟';
+        feedbackText.innerHTML = `Đã lưu giọng đọc của bé! Bấm <b>"Nghe lại giọng bé đọc"</b> nhé. Dưới đây là các từ hay gặp để cô hướng dẫn thêm:`;
+        feedback.classList.remove('hidden');
+        detectedWrongWords = storyWordObjects.slice(1, 4).map(o => o.word);
+      } else {
+        detectedWrongWords = [];
+        let spokenPointer = 0;
+        let correctCount = 0;
+
+        storyWordObjects.forEach((item) => {
+          const target = normalizeWord(item.word);
+          const span = document.getElementById(item.spanId);
+          
+          let found = false;
+          const searchLimit = Math.min(spokenPointer + 6, treatedSpoken.length);
+          for (let i = spokenPointer; i < searchLimit; i++) {
+            if (treatedSpoken[i] === target) {
+              found = true;
+              spokenPointer = i + 1;
+              break;
+            }
+          }
+
+          if (found) {
+            span.className = 'word-token word-correct';
+            correctCount++;
+          } else {
+            span.className = 'word-token word-wrong';
+            if (!detectedWrongWords.includes(item.word)) {
+              detectedWrongWords.push(item.word);
+            }
+          }
+        });
+
+        document.getElementById('correctWordsInput').value = correctCount;
+        calculateWPM();
+
+        if (detectedWrongWords.length === 0) {
+          feedback.className = "p-3 sm:p-4 rounded-2xl border-2 bg-emerald-100 text-emerald-950 border-emerald-300 pop-in";
+          feedbackIcon.textContent = '👑';
+          feedbackText.innerHTML = `Xuất sắc tuyệt vời! Bé đã đọc đúng <b>100%</b> tất cả các từ trong bài! 🎉`;
+          feedback.classList.remove('hidden');
+          wrongContainer.classList.add('hidden');
+          return;
+        } else {
+          feedback.className = "p-3 sm:p-4 rounded-2xl border-2 bg-sky-50 text-sky-950 border-sky-300 pop-in";
+          feedbackIcon.textContent = '👏';
+          feedbackText.innerHTML = `Bé đọc được <b>${correctCount}</b> từ rất tốt! Có <b>${detectedWrongWords.length}</b> từ cần rèn thêm bên dưới nhé!`;
+          feedback.classList.remove('hidden');
+        }
+      }
+
+      wrongList.innerHTML = '';
+      detectedWrongWords.forEach((word) => {
+        const btn = document.createElement('button');
+        btn.className = "btn-tactile bg-rose-100 active:bg-rose-200 text-rose-900 font-black text-lg sm:text-2xl px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl border-2 border-rose-300 flex items-center gap-1.5 cursor-pointer";
+        btn.innerHTML = `<span>🔊</span> <span>${word}</span>`;
+        btn.onclick = () => {
+          guideSingleWord(word, btn);
+        };
+        wrongList.appendChild(btn);
+      });
+
+      wrongContainer.classList.remove('hidden');
+    }
+
+    // =========================================================================
+    // NGHE LẠI GIỌNG BÉ ĐỌC
+    // =========================================================================
+    let isChildPlaying = false;
+
+    function toggleChildPlayback() {
+      const player = document.getElementById('childAudioPlayer');
+      const icon = document.getElementById('playbackIcon');
+      const text = document.getElementById('playbackText');
+      const btn = document.getElementById('playbackChildBtn');
+
+      if (!childAudioUrl) return;
+
+      if (isChildPlaying) {
+        stopChildPlayback();
+      } else {
+        stopReadAloud();
+        player.play();
+        isChildPlaying = true;
+        icon.textContent = '⏹️';
+        text.textContent = 'Dừng phát';
+        btn.classList.replace('bg-sky-500', 'bg-rose-500');
+
+        player.onended = () => stopChildPlayback();
+        player.onerror = () => stopChildPlayback();
+      }
+    }
+
+    function stopChildPlayback() {
+      const player = document.getElementById('childAudioPlayer');
+      const icon = document.getElementById('playbackIcon');
+      const text = document.getElementById('playbackText');
+      const btn = document.getElementById('playbackChildBtn');
+
+      if (player) {
+        player.pause();
+        player.currentTime = 0;
+      }
+      isChildPlaying = false;
+      if (icon) icon.textContent = '🎧';
+      if (text) text.textContent = 'Nghe lại giọng bé đọc';
+      if (btn && childAudioUrl) {
+        btn.className = "btn-tactile bg-sky-500 active:bg-sky-600 text-white text-base sm:text-xl font-black px-4 py-3 sm:px-6 sm:py-3.5 rounded-2xl flex items-center justify-center gap-2.5 cursor-pointer";
+      }
+    }
+
+    function guideSingleWord(word, targetEl = null) {
+      stopReadAloud();
+      stopChildPlayback();
+
+      if (targetEl) {
+        targetEl.classList.add('ring-4', 'ring-amber-400', 'scale-105');
+        setTimeout(() => {
+          targetEl.classList.remove('ring-4', 'ring-amber-400', 'scale-105');
+        }, 2200);
+      }
+
+      speakWithTeacherVoice(`Bé đọc cùng cô nhé: ${word}... ${word}`);
+    }
+
+    function guideAllWrongWords() {
+      if (detectedWrongWords.length === 0) return;
+      stopReadAloud();
+      stopChildPlayback();
+
+      const text = `Chúng mình cùng luyện đọc lại những từ này thật chuẩn nhé: ${detectedWrongWords.join(", ")}. Em làm tốt lắm!`;
+      speakWithTeacherVoice(text);
+    }
+
+    // =========================================================================
+    // CHỌN GIỌNG TIẾNG VIỆT (ổn định trên GitHub Pages, điện thoại, máy tính)
+    // =========================================================================
+    let noViVoiceNoticeShown = false;
+
+    function pickVietnameseVoice() {
+      const voices = window.speechSynthesis.getVoices();
+      const vi = voices.filter(v => /^vi/i.test(v.lang) || /vietnam/i.test(v.name));
+      if (!vi.length) return null;
+      return vi.find(v => /HoaiMy|Hoài My|Linh|Mai|Chi/i.test(v.name))
+        || vi.find(v => /Natural|Online/i.test(v.name))
+        || vi[0];
+    }
+
+    function showNoViVoiceNotice() {
+      if (noViVoiceNoticeShown) return;
+      noViVoiceNoticeShown = true;
+      const box = document.createElement('div');
+      box.textContent = 'Chưa nghe được giọng đọc tiếng Việt. Hãy kiểm tra kết nối mạng, hoặc cài giọng tiếng Việt trong Cài đặt > Giọng nói (Text-to-speech), hoặc mở bằng Chrome/Edge.';
+      box.style.cssText = 'position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;background:#fff3cd;color:#664d03;border:2px solid #ffda6a;border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.2)';
+      box.onclick = () => box.remove();
+      document.body.appendChild(box);
+      setTimeout(() => box.remove(), 12000);
+    }
+
+    // --- Dự phòng: đọc bằng giọng tiếng Việt trực tuyến khi thiết bị không có giọng Việt ---
+    let onlineQueue = [];
+    let onlineAudio = null;
+
+    function stopOnlineAudio() {
+      onlineQueue = [];
+      if (onlineAudio) {
+        onlineAudio.onended = null;
+        onlineAudio.onerror = null;
+        try { onlineAudio.pause(); } catch (e) {}
+        onlineAudio = null;
+      }
+    }
+
+    function splitForOnline(text) {
+      const parts = text.replace(/\s+/g, ' ').match(/[^.!?;:\n]+[.!?;:]?/g) || [text];
+      const out = [];
+      parts.forEach(p => {
+        let t = p.trim();
+        while (t.length > 160) {
+          let cut = t.lastIndexOf(',', 160);
+          if (cut < 40) cut = t.lastIndexOf(' ', 160);
+          if (cut < 40) cut = 160;
+          out.push(t.slice(0, cut + 1).trim());
+          t = t.slice(cut + 1).trim();
+        }
+        if (t) out.push(t);
+      });
+      return out;
+    }
+
+    function speakOnline(utter) {
+      stopOnlineAudio();
+      onlineQueue = splitForOnline(utter.text);
+      const speed = Math.max(0.7, Math.min(1, (utter.rate || 0.85) + 0.1));
+      let started = false;
+      const playNext = () => {
+        if (!onlineQueue.length) {
+          onlineAudio = null;
+          if (utter.onend) utter.onend();
+          return;
+        }
+        const chunk = onlineQueue.shift();
+        const audio = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=vi&q=' + encodeURIComponent(chunk));
+        audio.referrerPolicy = 'no-referrer';
+        audio.playbackRate = speed;
+        onlineAudio = audio;
+        audio.onended = playNext;
+        audio.onerror = () => {
+          stopOnlineAudio();
+          showNoViVoiceNotice();
+          if (utter.onerror) utter.onerror();
+        };
+        audio.play().then(() => {
+          if (!started) { started = true; if (utter.onstart) utter.onstart(); }
+        }).catch(() => {
+          stopOnlineAudio();
+          showNoViVoiceNotice();
+          if (utter.onerror) utter.onerror();
+        });
+      };
+      playNext();
+    }
+
+    function speakUtterance(utter) {
+      stopOnlineAudio();
+      const go = () => {
+        const v = pickVietnameseVoice();
+        if (v) {
+          utter.voice = v;
+          utter.lang = v.lang;
+          window.speechSynthesis.speak(utter);
+        } else {
+          // Không có giọng Việt trên thiết bị -> dùng giọng Việt trực tuyến (cần internet)
+          speakOnline(utter);
+        }
+      };
+      if (window.speechSynthesis.getVoices().length) {
+        go();
+      } else {
+        let done = false;
+        const once = () => { if (done) return; done = true; go(); };
+        window.speechSynthesis.onvoiceschanged = once;
+        setTimeout(once, 1200);
+      }
+    }
+
+    function speakWithTeacherVoice(textToSpeak) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(textToSpeak);
+        utter.lang = 'vi-VN';
+        utter.rate = 0.82; // Chậm rãi cho học sinh lớp 2
+        utter.pitch = 1.15; // Âm sắc ngọt ngào, ấm áp
+
+        speakUtterance(utter);
+      }
+    }
+
+    // =========================================================================
+    // NGHE CÔ ĐỌC NGUYÊN BÀI
+    // =========================================================================
+    function setTtsSpeed(rate) {
+      ttsRate = rate;
+      const slowBtn = document.getElementById('speedSlowBtn');
+      const normalBtn = document.getElementById('speedNormalBtn');
+      if (rate < 1.0) {
+        slowBtn.className = "px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-black rounded-xl bg-amber-300 text-amber-950";
+        normalBtn.className = "px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-bold rounded-xl bg-transparent text-slate-600";
+      } else {
+        slowBtn.className = "px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-bold rounded-xl bg-transparent text-slate-600";
+        normalBtn.className = "px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-black rounded-xl bg-amber-300 text-amber-950";
+      }
+
+      if (isSpeaking) {
+        stopReadAloud();
+        startReadAloud();
+      }
+    }
+
+    function toggleReadAloud() {
+      if (isSpeaking) {
+        stopReadAloud();
+      } else {
+        startReadAloud();
+      }
+    }
+
+    function startReadAloud() {
+      stopReadAloud();
+      stopChildPlayback();
+
+      if (!('speechSynthesis' in window)) {
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(currentStoryData.storyText);
+      utterance.lang = 'vi-VN';
+      utterance.rate = ttsRate * 0.85;
+      utterance.pitch = 1.15;
+
+      utterance.onstart = () => {
+        isSpeaking = true;
+        document.getElementById('readIcon').textContent = '⏹️';
+        document.getElementById('readText').textContent = 'Dừng đọc';
+        document.getElementById('ttsStatusBanner').classList.remove('hidden');
+        document.getElementById('readAloudBtn').classList.replace('bg-sky-500', 'bg-rose-500');
+      };
+
+      utterance.onend = () => stopReadAloud();
+      utterance.onerror = () => stopReadAloud();
+
+      speakUtterance(utterance);
+    }
+
+    function stopReadAloud() {
+      stopOnlineAudio();
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      isSpeaking = false;
+      const icon = document.getElementById('readIcon');
+      const text = document.getElementById('readText');
+      const btn = document.getElementById('readAloudBtn');
+      const banner = document.getElementById('ttsStatusBanner');
+
+      if (icon && text && btn) {
+        icon.textContent = '👩‍🏫';
+        text.textContent = 'Nghe cô đọc';
+        btn.className = "btn-tactile bg-sky-500 active:bg-sky-600 text-white text-base sm:text-xl font-bold px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl flex items-center gap-1.5";
+      }
+
+      if (banner) {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function toggleTimer() {
+      if (isTimerRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+
+    function startTimer() {
+      isTimerRunning = true;
+      document.getElementById('startTimerBtn').innerHTML = `<span>⏸️</span> Tạm dừng`;
+      document.getElementById('startTimerBtn').classList.replace('bg-indigo-600', 'bg-amber-600');
+
+      const notice = document.getElementById('timerNotice');
+      notice.textContent = "⏱️ Bé đang đọc rất tốt, cố lên!";
+      notice.classList.remove('hidden');
+
+      timerInterval = setInterval(() => {
+        timerTimeLeft--;
+        updateTimerDisplay();
+
+        if (timerTimeLeft <= 0) {
+          clearInterval(timerInterval);
+          isTimerRunning = false;
+          onTimerFinished();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      isTimerRunning = false;
+      clearInterval(timerInterval);
+      document.getElementById('startTimerBtn').innerHTML = `<span>▶️</span> Đọc tiếp`;
+      document.getElementById('startTimerBtn').classList.replace('bg-amber-600', 'bg-indigo-600');
+    }
+
+    function resetTimer() {
+      isTimerRunning = false;
+      clearInterval(timerInterval);
+      timerTimeLeft = 60;
+      updateTimerDisplay();
+      
+      const btn = document.getElementById('startTimerBtn');
+      if (btn) {
+        btn.innerHTML = `<span>▶️</span> Bắt đầu đọc`;
+        btn.classList.replace('bg-amber-600', 'bg-indigo-600');
+      }
+
+      const notice = document.getElementById('timerNotice');
+      if (notice) notice.classList.add('hidden');
+    }
+
+    function updateTimerDisplay() {
+      const display = document.getElementById('timerDisplay');
+      const progress = document.getElementById('timerProgress');
+      if (display && progress) {
+        display.textContent = `${timerTimeLeft}s`;
+        const percent = (timerTimeLeft / timerDuration) * 100;
+        progress.style.width = `${percent}%`;
+      }
+    }
+
+    function onTimerFinished() {
+      playChimeSound();
+      const btn = document.getElementById('startTimerBtn');
+      btn.innerHTML = `<span>🏁</span> Hết giờ!`;
+      btn.classList.replace('bg-amber-600', 'bg-slate-500');
+      
+      const notice = document.getElementById('timerNotice');
+      notice.innerHTML = "🔔 <b>Kính coong!</b> Hết 60 giây rồi! Hãy ghi số từ đọc đúng nhé!";
+      notice.classList.remove('hidden');
+
+      document.getElementById('correctWordsInput').focus();
+    }
+
+    // Âm thanh chuông báo chuẩn cho mọi thiết bị di động
+    function playChimeSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(587.33, now);
+        gain1.gain.setValueAtTime(0.3, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 1.2);
+
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880, now + 0.25);
+        gain2.gain.setValueAtTime(0.35, now + 0.25);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.25);
+        osc2.stop(now + 1.8);
+      } catch (e) {
+        console.log("Audio Context đang chờ cử chỉ kích hoạt:", e);
+      }
+    }
+
+    function calculateWPM() {
+      const input = document.getElementById('correctWordsInput');
+      const val = parseInt(input.value, 10);
+      const resultSpan = document.getElementById('wpmResult');
+
+      if (isNaN(val) || val < 0) {
+        resultSpan.textContent = '0';
+        return;
+      }
+      resultSpan.textContent = val.toString();
+    }
+
+    function renderQuiz() {
+      answeredQuestions = [false, false, false];
+      document.getElementById('quizBottomNav').classList.add('hidden');
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+
+      currentStoryData.questions.forEach((qObj, qIndex) => {
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-3xl p-4 sm:p-6 shadow-sm border-2 sm:border-3 border-yellow-200 transition-all";
+        card.id = `questionCard_${qIndex}`;
+
+        let optionsHtml = '';
+        qObj.options.forEach((optText, optIndex) => {
+          optionsHtml += `
+            <button onclick="handleAnswerClick(${qIndex}, ${optIndex})" 
+              id="optBtn_${qIndex}_${optIndex}"
+              class="w-full text-left bg-slate-50 active:bg-amber-100 text-slate-800 font-bold text-base sm:text-2xl p-3 sm:p-4 rounded-2xl border-2 border-slate-200 flex items-center justify-between cursor-pointer">
+              <span>${optText}</span>
+              <span id="optIcon_${qIndex}_${optIndex}" class="text-xl sm:text-2xl">⚪</span>
+            </button>
+          `;
+        });
+
+        card.innerHTML = `
+          <div class="flex items-center gap-2 mb-3">
+            <span class="bg-amber-200 text-amber-900 text-xs sm:text-base font-black px-3 py-0.5 rounded-xl">Câu ${qIndex + 1}</span>
+            <h4 class="text-base sm:text-2xl font-extrabold text-slate-800">${qObj.q}</h4>
+          </div>
+          <div class="flex flex-col gap-2.5">
+            ${optionsHtml}
+          </div>
+          <div id="feedback_${qIndex}" class="mt-3 hidden p-3 rounded-2xl text-base sm:text-xl font-bold flex items-center gap-2">
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function handleAnswerClick(qIndex, selectedIndex) {
+      const qObj = currentStoryData.questions[qIndex];
+      const feedbackEl = document.getElementById(`feedback_${qIndex}`);
+      const isCorrect = selectedIndex === qObj.correctIndex;
+
+      qObj.options.forEach((_, idx) => {
+        const btn = document.getElementById(`optBtn_${qIndex}_${idx}`);
+        const icon = document.getElementById(`optIcon_${qIndex}_${idx}`);
+        btn.className = "w-full text-left bg-slate-50 text-slate-800 font-bold text-base sm:text-2xl p-3 sm:p-4 rounded-2xl border-2 border-slate-200 flex items-center justify-between cursor-pointer";
+        icon.textContent = "⚪";
+      });
+
+      const selectedBtn = document.getElementById(`optBtn_${qIndex}_${selectedIndex}`);
+      const selectedIcon = document.getElementById(`optIcon_${qIndex}_${selectedIndex}`);
+
+      if (isCorrect) {
+        selectedBtn.className = "w-full text-left bg-emerald-100 text-emerald-950 font-bold text-base sm:text-2xl p-3 sm:p-4 rounded-2xl border-2 border-emerald-500 flex items-center justify-between shadow-sm";
+        selectedIcon.textContent = "⭐";
+
+        feedbackEl.className = "mt-3 p-3 rounded-2xl text-base sm:text-xl font-black flex items-center gap-2 bg-emerald-100 text-emerald-900 border-2 border-emerald-300 pop-in";
+        feedbackEl.innerHTML = `<span>⭐⭐⭐</span> <span>Em giỏi lắm! Trả lời chính xác rồi! 🎉</span>`;
+        feedbackEl.classList.remove('hidden');
+
+        answeredQuestions[qIndex] = true;
+      } else {
+        selectedBtn.className = "w-full text-left bg-rose-50 text-rose-950 font-bold text-base sm:text-2xl p-3 sm:p-4 rounded-2xl border-2 border-rose-300 flex items-center justify-between";
+        selectedIcon.textContent = "💭";
+
+        feedbackEl.className = "mt-3 p-3 rounded-2xl text-sm sm:text-lg font-bold flex items-center gap-2 bg-amber-100 text-amber-900 border-2 border-amber-300 pop-in";
+        feedbackEl.innerHTML = `<span>🌱</span> <span>Gần đúng rồi! Em đọc lại bài một chút rồi chọn lại nhé! ❤️</span>`;
+        feedbackEl.classList.remove('hidden');
+      }
+
+      if (answeredQuestions.every(v => v === true)) {
+        document.getElementById('quizBottomNav').classList.remove('hidden');
+        document.getElementById('quizBottomNav').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // Tải danh sách giọng nói trình duyệt
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.getVoices();
+    }
+  </script>
+</body>
+</html>
